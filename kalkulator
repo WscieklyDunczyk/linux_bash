@@ -1,0 +1,78 @@
+!/bin/bash
+
+clear
+obliczenia(){
+	if [[ $operacja = "+" ]]; then
+		wynik=$[$a+$b]
+	elif [[ $operacja = "-" ]]; then
+		wynik=$[$a-$b]
+	elif [[ $operacja = "*" ]]; then
+		wynik=$[$a*$b]
+	elif [[ $operacja = "/" ]]; then
+		wynik=$[$a/$b]
+	elif [[ $operacja = "^" ]]; then
+		wynik=$[$a**$b]
+	fi
+	echo "$wynik"
+}
+wyjscie(){
+	STR='+-*/^'
+	while [ 1 ]; do
+	read -p ": " o
+	if [[ $o = "." ]]; then
+		exit 0
+	elif ! [[ "$STR" == *"$o"* ]]; then
+		echo "Podaj poprawna operacje"
+	else
+		break
+	fi
+	done
+}
+walidacja(){
+	while [ 1 ]; do
+	read -p ": " x
+		if [[ $x = "." ]]; then
+			clear
+			exit 0
+		elif [[ -z $x ]]; then
+			echo "Podaj wartosc"
+		elif ! [[ $x =~ ^-?[0-9]+$ ]]; then
+			echo "Podaj poprawna wartosc"
+		else
+			return $x
+		fi	
+	done
+}
+
+if [[ -z $1 ]]; then
+	plik="calc_output.txt"
+else
+	plik=$1
+fi
+
+echo "--- Kalkulator --- "
+while [ 1 ]; do
+	if [[ -z "$a" ]]; then
+		echo "Liczba | operacja | liczba"		
+		walidacja
+		a=$x
+	else	
+		echo ": $a"		
+	fi
+	
+	#read -p ": " operacja
+	#wyjscie $operacja
+	
+	wyjscie
+	operacja=$o
+	
+	walidacja
+	b=$x
+
+	clear
+	VAR=$(obliczenia $a $operacja $b);
+	echo "$a $operacja $b = $VAR" >> $plik
+	echo "$a $operacja $b = $VAR"
+	echo "-------------------------------"
+	a=$(($VAR));
+done
